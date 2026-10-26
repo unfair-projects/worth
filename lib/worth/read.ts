@@ -255,8 +255,9 @@ async function fromVendor(handle: string): Promise<Account | null | undefined> {
 
 async function fromProfile(handle: string): Promise<Account | null> {
   try {
+    /* fxtwitter answers 401 to a request with no User-Agent, which is what a Worker sends */
     const res = await fetch(`https://api.fxtwitter.com/${handle}`, {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', 'User-Agent': 'worth/1.0 (+https://myaccworth.com)' },
       signal: AbortSignal.timeout(6_000),
       cache: 'no-store',
     })

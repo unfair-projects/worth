@@ -1,9 +1,8 @@
 import { ImageResponse } from 'next/og'
-import { readFile } from 'node:fs/promises'
-import path from 'node:path'
 import type { ReactNode } from 'react'
 
 import { WORTH } from '../../app/worth/words'
+import { readPublic } from '../assets'
 import { ogFonts } from '../og'
 import { money, percent, perMonth } from './model'
 import { ground } from './pixels'
@@ -158,7 +157,7 @@ const heroCache = new Map<number, Promise<{ src: string; ratio: number }>>()
 function hero(n: number) {
   let p = heroCache.get(n)
   if (!p) {
-    p = readFile(path.join(process.cwd(), 'public', 'worth', 'heroes', `${n}.png`)).then((buf) => ({
+    p = readPublic(`worth/heroes/${n}.png`).then((buf) => ({
       src: `data:image/png;base64,${buf.toString('base64')}`,
       /* width over height, from the PNG header */
       ratio: buf.readUInt32BE(16) / buf.readUInt32BE(20),
