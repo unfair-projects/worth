@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
-import { readFile } from 'node:fs/promises'
-import path from 'node:path'
+
+import { readPublic } from './assets'
 
 /**
  * The OpenGraph card — Keycap v2 grammar from Paper: canvas page, one white
@@ -35,11 +35,10 @@ const K = {
 /* exported since /nowatermark draws its own card (Fedor 2026-08-11) — one
    place that knows where the ttf files live, whoever is drawing */
 export async function ogFonts() {
-  const dir = path.join(process.cwd(), 'public', 'fonts', 'og')
   const [pixel, regular, semibold] = await Promise.all([
-    readFile(path.join(dir, 'NewPixel.ttf')),
-    readFile(path.join(dir, 'Inter-400.ttf')),
-    readFile(path.join(dir, 'Inter-600.ttf')),
+    readPublic('fonts/og/NewPixel.ttf'),
+    readPublic('fonts/og/Inter-400.ttf'),
+    readPublic('fonts/og/Inter-600.ttf'),
   ])
   return [
     { name: 'NewPixel', data: pixel, weight: 400 as const, style: 'normal' as const },
@@ -56,9 +55,8 @@ async function inlineCover(publicPath?: string) {
      handed straight through; only OUR OWN paths need reading off disk. */
   if (/^https?:\/\//i.test(publicPath)) return publicPath
   try {
-    const file = path.join(process.cwd(), 'public', publicPath.replace(/^\//, ''))
-    const buf = await readFile(file)
-    const mime = /\.jpe?g$/i.test(file) ? 'image/jpeg' : 'image/png'
+    const buf = await readPublic(publicPath)
+    const mime = /\.jpe?g$/i.test(publicPath) ? 'image/jpeg' : 'image/png'
     return `data:${mime};base64,${buf.toString('base64')}`
   } catch {
     return undefined

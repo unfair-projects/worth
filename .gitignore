@@ -8,9 +8,15 @@ next-env.d.ts
 .env
 .env.local
 .env*.local
+!.env.production
 
 .DS_Store
 npm-debug.log*
 
 # every account /worth has read is kept here (lib/worth/store.ts): local data, never committed
 /.data/
+
+# Cloudflare
+.open-next/
+.wrangler/
+.dev.vars

@@ -1,4 +1,5 @@
 import { fetchPublishedCreators } from '../api/creator'
+import { later, onWorkers } from '../cloudflare'
 import { value, type Valuation } from './model'
 import { readAccount, readListed, type Account, type Read } from './read'
 import { everyone, recall, remember } from './store'
@@ -23,6 +24,9 @@ const stale = (a: Account) => Date.now() - a.at > (a.thin ? THIN_FOR : FRESH_FOR
 const SEED_EVERY = 12 * 60 * 60_000
 /* our own API answers a page in about 0.3s: sixteen at once read the 1,262 in about 25s */
 const SEED_AT_ONCE = 16
+/* a Worker may make about 50 subrequests on the free plan, 1,000 on a paid one: it reads this many
+   pages a run and the next run carries on from the book, which already holds what the last one read */
+const SEED_RUN_ON_WORKERS = 40
 
 export interface Result {
   account: Account
@@ -256,10 +260,12 @@ export function seed(): void {
         }
       }
 
-      const due = [...names.values()].filter((h) => {
+      const owed = [...names.values()].filter((h) => {
         const a = known.get(h.toLowerCase())
         return !a || !a.listed || Date.now() - a.at > SEED_EVERY
       })
+      const due = onWorkers() ? owed.slice(0, SEED_RUN_ON_WORKERS) : owed
+      const rest = owed.length - due.length
       let next = 0
       const worker = async () => {
         while (next < due.length) {
@@ -284,9 +290,11 @@ export function seed(): void {
         }
       }
       await Promise.all(Array.from({ length: SEED_AT_ONCE }, worker))
-      seeding.at = Date.now()
+      /* reads left over: ask again in a minute rather than in twelve hours */
+      seeding.at = rest > 0 ? Date.now() - SEED_EVERY + 60_000 : Date.now()
     } finally {
       seeding.running = null
     }
   })()
+  later(seeding.running)
 }
