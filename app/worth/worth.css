@@ -1,0 +1,255 @@
+/* /worth in motion. Every class rests on its finished frame, so a reader
+   with reduced motion (or a slow device) sees the page, not a blank. */
+
+/* a piece landing: a little low and a hair small, with the product's spring */
+@keyframes w-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.w-rise {
+  animation: w-rise 0.45s cubic-bezier(0.22, 0.98, 0.3, 1.12) both;
+}
+
+/* the card arriving: a press down into place */
+@keyframes w-land {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.005);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.w-land {
+  animation: w-land 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+/* a value settling: one soft bump when it finishes counting */
+@keyframes w-settle {
+  0%,
+  100% {
+    transform: none;
+  }
+  45% {
+    transform: scale(1.06);
+  }
+}
+.w-settle {
+  animation: w-settle 0.32s ease-out;
+}
+
+/* skeleton bars while X answers */
+@keyframes w-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+.w-shimmer {
+  background: linear-gradient(90deg, #efefef 0%, #f7f7f7 40%, #efefef 80%);
+  background-size: 200% 100%;
+  animation: w-shimmer 1.2s linear infinite;
+}
+
+/* the money flying off the total, the product's own celebrate move */
+@keyframes w-fly {
+  0% {
+    opacity: 0;
+    transform: translate(0, 6px) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), -54px) scale(1.15) rotate(var(--rot));
+  }
+}
+.w-fly {
+  animation: w-fly 1.1s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* the why, folding open */
+.w-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s cubic-bezier(0.2, 0.9, 0.25, 1), opacity 0.25s ease;
+  opacity: 0;
+}
+.w-fold[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.w-fold > div {
+  overflow: hidden;
+}
+
+/* a field that refused: one short shake */
+@keyframes w-shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+.w-shake {
+  animation: w-shake 0.36s ease-in-out;
+}
+
+/* the faces visiting the hero (parts/Crowd), unfair.so's own (Product
+   landing-v4 crowd.css): turning up at a spot, a little over-scaled as they
+   land, and leaving up and out. On the face's own box, so its positioning
+   translate is left alone */
+@keyframes crowd-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.crowd-in {
+  animation: crowd-in 0.42s cubic-bezier(0.22, 0.98, 0.3, 1.25) both;
+}
+@keyframes crowd-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.85);
+  }
+}
+.crowd-out {
+  animation: crowd-out 0.3s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+/* a row valued just now drops in at the head of the Live tab, lit for a moment */
+@keyframes w-row-in {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 3.5rem;
+    opacity: 1;
+  }
+}
+@keyframes w-row-lit {
+  from {
+    background-color: var(--color-k-accent-soft);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+.w-row-in {
+  animation:
+    w-row-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) backwards,
+    w-row-lit 2.4s ease-out backwards;
+}
+
+/* the card's glint (parts/bits Shine): where the light is and how bright,
+   registered so they glide; at rest it sits on the top right */
+@property --mx {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 84%;
+}
+@property --my {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 14%;
+}
+@property --glint {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.7;
+}
+.w-shine {
+  transition:
+    transform 0.3s ease-out,
+    box-shadow 0.3s ease-out,
+    --mx 0.25s ease-out,
+    --my 0.25s ease-out,
+    --glint 0.3s ease-out;
+}
+/* round the light, a breath of cobalt: what makes it show on white */
+.w-shine-halo {
+  background: radial-gradient(farthest-corner circle at var(--mx) var(--my), rgba(0, 51, 255, 0.09) 0%, rgba(0, 51, 255, 0.04) 22%, transparent 52%);
+  opacity: var(--glint);
+}
+/* the light itself, lifting the ink it lies over */
+.w-shine-glare {
+  background: radial-gradient(farthest-corner circle at var(--mx) var(--my), rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.25) 22%, transparent 50%);
+  mix-blend-mode: screen;
+  opacity: calc(var(--glint) * 0.85);
+}
+
+/* the Live tab's light, breathing (the main landing's pixels-glow) */
+@keyframes w-glow {
+  from {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+.w-glow {
+  animation: w-glow 1.6s ease-out infinite;
+}
+
+/* the dollars that fall over the opening screen: top is a share of the hero, so they cross it whatever its height */
+@keyframes w-fall {
+  from {
+    top: -6%;
+  }
+  to {
+    top: 104%;
+  }
+}
+.w-fall {
+  animation: w-fall var(--fall, 12s) linear var(--delay, 0s) infinite;
+  will-change: top;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .w-fall {
+    display: none;
+  }
+  .w-rise,
+  .w-land,
+  .w-settle,
+  .w-fly,
+  .w-shake,
+  .crowd-in,
+  .crowd-out,
+  .w-row-in,
+  .w-glow {
+    animation: none;
+  }
+  .w-shimmer {
+    animation: none;
+  }
+}

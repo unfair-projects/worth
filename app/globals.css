@@ -1,0 +1,234 @@
+@import 'tailwindcss';
+
+/*
+  unfair.so — Keycap design tokens.
+  Source of truth: Paper file 01KWVEQXF2Y0DAWAQQTG7YSS6T, stylesheet "Keycap — Final · Blue" (KYH-0).
+  Snapshot: 2026-07-19 via get_tokens. Do not invent values — re-sync from Paper.
+*/
+@theme {
+  /* neutrals */
+  --color-k-canvas: #f4f4f4;
+  --color-k-surface: #ffffff;
+  --color-k-ink: #1a1a1a;
+  --color-k-muted: #6e6e6e;
+  --color-k-faint: #a6a6a6;
+  --color-k-border: #e8e8e8;
+  --color-k-hover: #efefef;
+  /* WHERE YOU ARE, in the navigation (Fedor 2026-08-11: "поконтрастнее немного
+     поярче"). Hover borrowed for the job read as almost nothing: #efefef on an
+     #f4f4f4 canvas is five points of grey, and the active row was being carried
+     entirely by its weight. This is a step people can actually see, and it
+     leaves hover its own quieter job — the row under the cursor is still a
+     shade lighter than the row you are standing on. */
+  --color-k-active: #e2e2e2;
+  --color-k-control-off: #d9d9d9;
+
+  /* accent */
+  --color-k-accent: #0033ff;
+  --color-k-accent-deep: #0026bf;
+  --color-k-accent-soft: #ebefff;
+  --color-k-accent-soft-deep: #c7d3ff;
+
+  /* semantic */
+  --color-k-money: #17a45c;
+  --color-k-danger: #e5484d;
+  --color-k-likes: #e0559a;
+  --color-k-replies: #55ac30;
+  --color-k-tangerine: #ff7a00;
+  --color-k-tangerine-soft: #fff4e8;
+  --color-k-tangerine-soft-deep: #ffe2c7;
+  --color-k-tangerine-deep: #bf5b00;
+  /* THE TIME-LEFT TAG'S AMBER (Sergei 2026-09-17: "make them in colors like
+     green/yellow/orange according to how much time left" — shared/orders/
+     kit.tsx Left, which wears the replies green past a day and the tangerine
+     pair inside six hours). The kit had no yellow at all. Same shape as the
+     tangerine trio above, and the same values in the client app's
+     globals.css, since the shared package draws the tag in both. */
+  --color-k-amber: #ffb400;
+  --color-k-amber-soft: #fff7e0;
+  --color-k-amber-deep: #8c6200;
+  /* LINKEDIN'S OWN BLUE, the same token the client app carries (its
+     globals.css, 2026-09-23): X is the ink the kit already has, LinkedIn is
+     the #0A66C2 its mark is printed in. It marks the platform and nothing
+     else — never a second accent, never on a key. */
+  --color-k-linkedin: #0a66c2;
+
+  /* keycap */
+  --color-k-key-face: #212121;
+  --color-k-key-beard: #6e6e6e;
+
+  /* type scale (Paper --text-*) */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 32px;
+  --text-3xl: 44px;
+  --text-4xl: 64px;
+
+  /* tracking / leading */
+  --tracking-tight: -0.02em;
+  --tracking-caps: 0.08em;
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  /* radii — Paper tokens, k-prefixed so Tailwind's rounded-* scale keeps its
+     defaults (sm 4 / md 6 / lg 8 / xl 12 / 2xl 16). Overriding --radius-lg
+     had silently turned every rounded-lg into 16px. */
+  --radius-k-sm: 8px;
+  --radius-k-md: 12px;
+  --radius-k-lg: 16px;
+  --radius-k-key: 12px;
+
+  /* fonts (families wired in app/layout.tsx via next/font) */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-new-pixel);
+  --font-pixel: var(--font-press-start);
+  --font-hand: var(--font-caveat);
+
+  /* The ONE breakpoint. `desk:` is the desktop product, everything below it is
+     the phone build — tablets included, deliberately: two layouts we can hold
+     to a high standard beat three we cannot. 1180 is not a new number, it is
+     MIN_APP_WIDTH from components/DesktopGate.tsx, where the desktop columns
+     were already measured to start colliding. Its JavaScript copy
+     (lib/breakpoint.ts) went with the old door on 2026-10-09; no script
+     branches on 1180 any more.
+     Gives us `desk:` (>= 1180) and `max-desk:` (< 1180). */
+  --breakpoint-desk: 1180px;
+  /* The landing's second, lower floor (Fedor 2026-08-05: tablets must not
+     get the stretched phone build). The first screen is one fixed
+     composition a transform can shrink honestly, so it keeps its desktop
+     arrangement down to 680 and compresses; only under that does it hand
+     over to the phone build. The PRODUCT keeps its one 1180 boundary —
+     `land:` is for landing surfaces only. */
+  --breakpoint-land: 680px;
+}
+
+/* That That New Pixel Variable: display cut = ROND 100 (Round). Purchased, self-hosted. */
+.font-display {
+  font-family: var(--font-new-pixel);
+  font-variation-settings: 'ROND' 100;
+}
+
+html,
+body {
+  background: var(--color-k-canvas);
+  color: var(--color-k-ink);
+}
+
+/* ======================================================================
+   OLD ENGINES.
+
+   The customer repo spent four rounds on a real old iPhone learning these
+   (unfair.so Product/app/globals.css, 2026-08-13) and this host was never
+   given any of them: it was split off the day before that work started, so
+   it shipped Tailwind's modern defaults straight at whatever phone asked.
+   What follows is that treatment ported, cut down to the class tokens this
+   app actually wears — the floor itself is declared once, in package.json's
+   browserslist, and these are the words the CSS still needs written out.
+
+   Every block is UNLAYERED on purpose: it must outrank `@layer utilities`,
+   and its @supports gate keeps modern engines from ever reading it.
+   ====================================================================== */
+
+/* `overflow: clip` is a Safari 16 word. Below that the declaration is
+   invalid and DROPPED — the box stays `visible`, so faces paint past their
+   rounded tiles and the absolutely-laid door bleeds over what sits under
+   it. None of these boxes scrolls, so `hidden` IS `clip` to the eye. */
+@supports not (overflow: clip) {
+  .overflow-clip {
+    overflow: hidden;
+  }
+  /* NOT a blanket `.overflow-x-clip { overflow-x: hidden }`: unlike clip,
+     hidden makes the box a SCROLL CONTAINER, and a sticky descendant then
+     pins to that box instead of to the page. The one element wearing
+     overflow-x-clip here is the app shell (CreatorsDemo), which pairs it
+     with overflow-y-auto — already a scroller, so it re-parents nothing
+     that was not already its own, and the sticky header inside the
+     partnership screen keeps pinning where it did. */
+  .overflow-x-clip.overflow-y-auto {
+    overflow-x: hidden;
+  }
+}
+
+/* FILTERS FOR ENGINES WITHOUT @property (Safari < 16.4, old Firefox).
+   Tailwind v4 composes every filter as
+     backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) …
+   variables with EMPTY fallbacks, registered via @property — and where
+   @property does not exist the chain never resolves: no blur anywhere, so
+   the login panel's veil and both sheet scrims stand sharp over the screen
+   they are supposed to be softening. The condition is TAILWIND'S OWN
+   no-@property test, copied verbatim from its compiled fallback block, so
+   these fire on exactly the engines its own defaults fire on. */
+@supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or
+  ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+  .backdrop-blur-\[2px\] {
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+  .backdrop-blur-\[3px\] {
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+  .backdrop-blur-\[5px\] {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+  }
+  /* The one decorative pour — the cobalt glow behind the published card
+     (PublishStep). Without a working blur it is a hard-edged colour disc
+     sitting on the page, which is worse than no glow at all. */
+  .blur-2xl {
+    display: none;
+  }
+
+  /* Rounded windows that hold COMPOSITED children — transformed panes, the
+     parallax tiles around the door, the fills inside every progress bar —
+     lose their corners on old WebKit, hardest DURING scroll, when the child
+     rides an accelerated layer that overflow clipping never touches. Two
+     forces together: the fully-opaque radial mask makes the corner clip
+     composited, and the translateZ layer keeps the CONTAINER on the
+     compositor so the clip holds while the page moves. The one cost is a
+     drop shadow on such a box being clipped with it — on these engines, the
+     trade the customer app already made. */
+  .overflow-clip[class*='rounded'] {
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    transform: translateZ(0);
+  }
+}
+
+/* svh/dvh are Chrome 108 / Safari 15.4 words, and Tailwind emits them BARE
+   — one invalid declaration and the whole height drops to auto: the app
+   shell collapses, the wall's screen folds, and both bottom sheets grow
+   past the window instead of capping under it. Old engines take the same
+   numbers in vh — on a phone vh may overshoot by the browser chrome, which
+   is the graceful version of this failure. Every class token in use is
+   written out by hand; none of them carries a variant here, so none needs a
+   media query of its own. At the iOS floor this block never fires — dvh
+   arrived in 15.4 — and it is Chrome/WebView 99–107 that it is for. */
+@supports not (height: 1dvh) {
+  .h-dvh {
+    height: 100vh;
+  }
+  .min-h-dvh {
+    min-height: 100vh;
+  }
+  .max-h-\[86dvh\] {
+    max-height: 86vh;
+  }
+  .min-h-\[calc\(100dvh-300px\)\] {
+    min-height: calc(100vh - 300px);
+  }
+}
+
+
+/* an ellipsis that keeps typing itself — for work with no finish line */
+@keyframes ellipsis-dot {
+  0%, 20% { opacity: 0.2; }
+  50% { opacity: 1; }
+  80%, 100% { opacity: 0.2; }
+}
+.ellipsis-dot {
+  animation: ellipsis-dot 1.4s ease-in-out infinite;
+}
+.ellipsis-dot:nth-child(2) { animation-delay: 0.18s; }
